@@ -1,9 +1,115 @@
 <!DOCTYPE html>
 <html>
-<body>
+<head>
+	<title>Snake Game</title>
+	<style>
+		#game-board {
+			width: 600px;
+			height: 600px;
+			background-color: #f2f2f2;
+			border: 1px solid #ddd;
+			margin: 0 auto;
+		}
+	</style>
+</head>
+<body><script>
+// Set up the game board
+const gameBoard = document.getElementById('game-board');
+const boardWidth = 20;
+const boardHeight = 20;
+const boardSize = boardWidth * boardHeight;
+for (let i = 0; i < boardSize; i++) {
+  const square = document.createElement('div');
+  gameBoard.appendChild(square);
+}
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+// Set up the snake
+let snake = [2, 1, 0];
+let direction = 1;
 
+// Draw the snake on the game board
+function drawSnake() {
+  for (let i = 0; i < snake.length; i++) {
+    gameBoard.children[snake[i]].classList.add('snake');
+  }
+}
+
+// Remove the snake from the game board
+function removeSnake() {
+  for (let i = 0; i < snake.length; i++) {
+    gameBoard.children[snake[i]].classList.remove('snake');
+  }
+}
+
+// Move the snake
+function moveSnake() {
+  const head = snake[0];
+  const newHead = head + direction;
+
+  // Check if the snake hits the wall or itself
+  if (
+    (direction === -1 && head % boardWidth === 0) ||  // hitting the left wall
+    (direction === 1 && (head + 1) % boardWidth === 0) || // hitting the right wall
+    (newHead < 0) || // hitting the top wall
+    (newHead >= boardSize) || // hitting the bottom wall
+    gameBoard.children[newHead].classList.contains('snake') // hitting itself
+  ) {
+    return clearInterval(timerId);
+  }
+
+  // Remove the old tail of the snake and add a new head
+  const tail = snake.pop();
+  removeSnake();
+  snake.unshift(newHead);
+  drawSnake();
+
+  // Check if the snake hits the food
+  if (gameBoard.children[newHead].classList.contains('food')) {
+    gameBoard.children[newHead].classList.remove('food');
+    snake.push(tail);
+    drawFood();
+  }
+}
+
+// Draw the food on the game board
+function drawFood() {
+  const food = Math.floor(Math.random() * boardSize);
+  if (!gameBoard.children[food].classList.contains('snake')) {
+    gameBoard.children[food].classList.add('food');
+  } else {
+    drawFood();
+  }
+}
+
+// Change the direction of the snake
+function changeDirection(event) {
+  switch (event.keyCode) {
+    case 37: // left arrow
+      direction = -1;
+      break;
+    case
+38: // up arrow
+direction = -boardWidth;
+break;
+case 39: // right arrow
+direction = 1;
+break;
+case 40: // down arrow
+direction = boardWidth;
+break;
+}
+}
+
+// Start the game
+drawSnake();
+drawFood();
+const timerId = setInterval(moveSnake, 100);
+document.addEventListener('keydown', changeDirection);
+</script>
+	<div id="game-board"></div>
+	<script src="snake.js"></script>
 </body>
 </html>
+
+
+
